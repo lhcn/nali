@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/patrickmn/go-cache"
 	"github.com/zu1k/nali/pkg/cdn"
 	"github.com/zu1k/nali/pkg/dbif"
 	"github.com/zu1k/nali/pkg/geoip"
@@ -69,7 +70,8 @@ func GetDB(typ dbif.QueryType) (db dbif.DB) {
 }
 
 func Find(typ dbif.QueryType, query string) *Result {
-	if result, found := queryCache.Load(query); found {
+
+	if result, found := queryCache.Get(query); found {
 		return result.(*Result)
 	}
 	db := GetDB(typ)
@@ -78,6 +80,6 @@ func Find(typ dbif.QueryType, query string) *Result {
 		return nil
 	}
 	res := &Result{db.Name(), result}
-	queryCache.Store(query, res)
+	queryCache.Set(query, res, cache.DefaultExpiration)
 	return res
 }

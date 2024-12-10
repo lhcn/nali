@@ -1,15 +1,16 @@
 package db
 
 import (
-	"sync"
+	"time"
 
+	"github.com/patrickmn/go-cache"
 	"github.com/zu1k/nali/pkg/dbif"
 )
 
 var (
 	dbNameCache = make(map[string]dbif.DB)
 	dbTypeCache = make(map[dbif.QueryType]dbif.DB)
-	queryCache  = sync.Map{}
+	queryCache  = cache.New(24*time.Hour, 10*time.Minute)
 )
 
 var (
